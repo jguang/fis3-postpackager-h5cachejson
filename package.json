@@ -1,0 +1,24 @@
+{
+  "name": "fis3-postpackager-h5cachejson",
+  "version": "1.0.0",
+  "description": "发布自动生成h5缓存配置文件",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jguang/fis3-postpackager-h5cachejson.git"
+  },
+  "keywords": [
+    "fis3",
+    "fis3-postpackager",
+    "h5cache"
+  ],
+  "author": "jguang",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jguang/fis3-postpackager-h5cachejson/issues"
+  },
+  "homepage": "https://github.com/jguang/fis3-postpackager-h5cachejson#readme"
+}
