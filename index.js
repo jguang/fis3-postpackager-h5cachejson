@@ -81,7 +81,7 @@ function cachePackager(ret, pack, settings, opt) {
                 //css过滤
                 if(linkArray){
                     linkArray.forEach(function(v){
-                        let href = v.match(styleUrl);
+                        var href = v.match(styleUrl);
                         if(href){
                             href = RegExp.$1.replace(/\'|\"/ig,'').trim();
                             cacheList["css_list"].push(href);
@@ -92,7 +92,7 @@ function cachePackager(ret, pack, settings, opt) {
                 //js过滤
                 if(scriptArray){
                     scriptArray.forEach(function(v){
-                        let src = v.match(scriptSrc);
+                        var src = v.match(scriptSrc);
                         if(src){
                             src = RegExp.$1.replace(/\'|\"/ig,'').trim();
                             cacheList["js_list"].push(src);
