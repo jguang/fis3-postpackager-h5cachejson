@@ -1,5 +1,5 @@
 /**
- * Created by baidu on 16/8/9.
+ * Created by jg on 17/06/07.
  */
 
 var cacheObj = {
@@ -7,8 +7,8 @@ var cacheObj = {
         "H5CacheList": []
       }
 };
-var h5Cache = fis.project.getProjectPath();
-var h5CacheJson = h5Cache + '/view/ksyun_web_cache.json';
+//var h5Cache = fis.project.getProjectPath();
+//var h5CacheJson = h5Cache + '/view/ksyun_web_cache.json';
 var rStyleScript = /(?:\s*(<link([^>]*?)(stylesheet){1}([^>]*?)(?:\/)?>))/ig;
 var linkScript = /(?:(\s*<script([^>]*)>([\s\S]*?)<\/script>))/ig;
 var scriptSrc = /(?:\ssrc\s*=\s*)('([^<>']+)'|"([^<>\"]+)")/i;
@@ -43,7 +43,16 @@ function cachePackager(ret, pack, settings, opt) {
 
     cacheObj.OriginalData.H5CacheList = catchMaps;
 
-    writeFile(h5CacheJson, JSON.stringify(cacheObj, null, 2));
+    var fileCache = ret.src[settings['jsonFile']];
+
+    //console.log(fileCache.getContent());
+
+    fileCache.setContent(JSON.stringify(cacheObj, null, 2));
+    
+    //console.log(fileCache.getContent());
+
+
+    // writeFile(h5CacheJson, JSON.stringify(cacheObj, null, 2));
 
     function compile(file) {
         // 暂时处理html文件
@@ -68,11 +77,13 @@ function cachePackager(ret, pack, settings, opt) {
                 };
                 var js_list;
                 var css_list;
-                cacheList["md5"] = file.getHash(),
-                cacheList["url"] = '\/' + (rUrl[2].indexOf('_') > -1 ? rUrl[2].replace('\_', '\/') : rUrl[2] + '\/' +rUrl[4])
-        
+                
+
                 // 修改script文件的引用
                 var content = file.getContent();
+
+                cacheList["md5"] =  file.getHash();  //md5(content, 32);
+                cacheList["url"] = '\/' + (rUrl[2].indexOf('_') > -1 ? rUrl[2].replace('\_', '\/') : rUrl[2] + '\/' +rUrl[4])
 
                 var linkArray = content.match(rStyleScript);
 
@@ -106,6 +117,10 @@ function cachePackager(ret, pack, settings, opt) {
 
     function writeFile(path, data){
         fis.util.write(path, data, 'utf-8', false);
+    }
+
+    function md5(data, len){
+        return fis.util.md5(data, len);
     }
 }
 module.exports = cachePackager;
