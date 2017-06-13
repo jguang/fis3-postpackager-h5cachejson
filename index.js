@@ -25,7 +25,15 @@ function cachePackager(ret, pack, settings, opt) {
     // 读取打包后的文件
     // console.log(ret.pkg['/pages/newbattle/index.html']);
     // console.log(ret.pkg['/pages/newbattle/index.html'].getContent());
-    var catchMaps = [];
+    var catchMaps = {};
+    var fileCache = ret.src[settings['jsonFile']];
+    var themeCache = ret.src[settings['themeFile']];
+
+    themeConfig = JSON.parse(themeCache.getContent()) 
+
+    console.log(themeConfig);
+
+    // 编译总文件
     var files = ret.pkg;
     Object.keys(files).forEach(function(subpath) {
         //console.log(subpath);
@@ -34,6 +42,48 @@ function cachePackager(ret, pack, settings, opt) {
         //console.log(file.useMap);
         compile(file);
     });
+
+    Object.keys(themeConfig).forEach(function(busid) {
+        var newJsonFileName = fileCache.realpathNoExt + "_" + busid + '.json';
+        // console.log(newJsonFileName);
+        var newJsonFile = fis.file.wrap(newJsonFileName);
+
+
+        var newCacheMaps = [];
+        var themeId =  themeConfig[busid];
+        Object.keys(catchMaps).forEach(function(url) {
+            var urlMaps = catchMaps[url];
+            var urlSel = url.split('\/');
+            var defaultUrl = [urlSel[0], 'default', urlSel[1]].join("\/");
+            var themeUrl = [urlSel[0], 'theme_' + themeId , urlSel[1]].join("\/");
+            if(urlMaps[themeUrl]) {
+               newCacheMaps.push(urlMaps[themeUrl]);     
+            }
+            else {
+               newCacheMaps.push(urlMaps[defaultUrl]);
+            }
+        });
+
+        newJsonFile.setContent(JSON.stringify(newCacheMaps, null, 2));
+
+        
+        //fis.compile.process(newJsonFile);
+        
+        // 添加对本theme的依赖 否侧watch下不更新此theme
+        //newJsonFile.cache.addDeps(themeCache.realpath);
+
+        // newJsonFile.links.forEach(function(derived) {
+        //     fileCache.addLink(derived);
+        // });
+
+        // fileCache.derived.push(newJsonFile);
+
+        // fis.release();
+
+        ret.pkg[newJsonFile.subpath] = newJsonFile;
+
+    });
+
     
     cacheObj.Type = settings.Type || 4;
     
@@ -43,7 +93,7 @@ function cachePackager(ret, pack, settings, opt) {
 
     cacheObj.OriginalData.H5CacheList = catchMaps;
 
-    var fileCache = ret.src[settings['jsonFile']];
+    
 
     //console.log(fileCache.getContent());
 
@@ -66,6 +116,14 @@ function cachePackager(ret, pack, settings, opt) {
         // };
         var rUrl = file.subpathNoExt.slice(1).split('/');
 
+        // 老模式模板
+        if (rUrl.length === 3 && rUrl[1] === 'home') {
+            var oldRUrl = rUrl[2].split('_');
+            rUrl[2] = oldRUrl[0];
+            rUrl[3] = 'default';
+            rUrl[4] = oldRUrl[1];
+        }
+
         var cacheActions = settings.cacheActions;
 
         if(rUrl[2] && rUrl[4] && cacheActions.indexOf(rUrl[4]) > -1) {
@@ -75,15 +133,16 @@ function cachePackager(ret, pack, settings, opt) {
                     js_list: [],
                     css_list: []
                 };
-                var js_list;
-                var css_list;
-                
-
+                var themeUrl;
+                var queryUrl;
                 // 修改script文件的引用
                 var content = file.getContent();
+                
+                themeUrl = [rUrl[2], rUrl[3], rUrl[4]].join('\/');
+                queryUrl = [rUrl[2],rUrl[4]].join('\/');
 
                 cacheList["md5"] =  file.getHash();  //md5(content, 32);
-                cacheList["url"] = '\/' + (rUrl[2].indexOf('_') > -1 ? rUrl[2].replace('\_', '\/') : rUrl[2] + '\/' +rUrl[4])
+                cacheList["url"] = queryUrl;
 
                 var linkArray = content.match(rStyleScript);
 
@@ -110,8 +169,9 @@ function cachePackager(ret, pack, settings, opt) {
                         }
                     })
                 }
+                catchMaps[queryUrl] = catchMaps[queryUrl] || {};
 
-                catchMaps.push(cacheList);     
+                catchMaps[queryUrl][themeUrl] = cacheList;
         }
     };
 
