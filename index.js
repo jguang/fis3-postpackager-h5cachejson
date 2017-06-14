@@ -50,7 +50,7 @@ function cachePackager(ret, pack, settings, opt) {
 
 
         var newCacheMaps = [];
-        var themeId =  themeConfig[busid];
+        var themeId =  themeConfig[busid]['theme'];
         Object.keys(catchMaps).forEach(function(url) {
             var urlMaps = catchMaps[url];
             var urlSel = url.split('\/');
