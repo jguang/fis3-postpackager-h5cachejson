@@ -142,7 +142,7 @@ function cachePackager(ret, pack, settings, opt) {
                 queryUrl = [rUrl[2],rUrl[4]].join('\/');
 
                 cacheList["md5"] =  file.getHash();  //md5(content, 32);
-                cacheList["url"] = queryUrl;
+                cacheList["url"] = "\/" + queryUrl;
 
                 var linkArray = content.match(rStyleScript);
 
