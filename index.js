@@ -141,7 +141,7 @@ function cachePackager(ret, pack, settings, opt) {
                 themeUrl = [rUrl[2], rUrl[3], rUrl[4]].join('\/');
                 queryUrl = [rUrl[2],rUrl[4]].join('\/');
 
-                cacheList["md5"] =  file.getHash();  //md5(content, 32);
+                cacheList["md5"] =  md5(content, 32); // file.getHash() 可能出错;
                 cacheList["url"] = "\/" + queryUrl;
 
                 var linkArray = content.match(rStyleScript);
